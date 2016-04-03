@@ -1,0 +1,33 @@
+{
+    "pools": [{
+        "name": "Bytecoin",
+        "ticker": "BCN",
+        "poolmining": "pool.democats.org:45500",
+        "poolrpc": "http://pool.democats.org:7603/",
+        "daemonrpc": "http://pool.democats.org:7601/"
+    }, {
+        "name": "Dashcoin",
+        "ticker": "DSH",
+        "poolmining": "pool.democats.org:45510",
+        "poolrpc": "http://pool.democats.org:7613/",
+        "daemonrpc": "http://pool.democats.org:7611/" 
+    }, {
+        "name": "Magnatoj",
+        "ticker": "XMN",
+        "poolmining": "pool.democats.org:45520",
+        "poolrpc": "http://pool.democats.org:7623/",
+        "daemonrpc": "http://pool.democats.org:7621/"
+    }, {
+        "name": "Ethanolium",
+        "ticker": "C2H5OH",
+        "poolmining": "pool.democats.org:45530",
+        "poolrpc": "http://pool.democats.org:7633/",
+        "daemonrpc": "http://pool.democats.org:7631/"
+    }, {
+        "name": "Bitaltcoin",
+        "ticker": "BAI",
+        "poolmining": "pool.democats.org:45540",
+        "poolrpc": "http://pool.democats.org:7643/",
+        "daemonrpc": "http://pool.democats.org:7641/json_rpc"
+    }]
+}
