@@ -15,6 +15,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // Change to 0 to connect to remote host
@@ -227,6 +228,12 @@ func main() {
 				continue
 			}
 
+			blocks_with_version_1_0_count := 0
+			blocks_with_version_1_1_count := 0
+			blocks_with_version_2_0_count := 0
+			blocks_with_version_2_1_count := 0
+			blocks_with_version_3_0_count := 0
+
 			// Read hashrate
 			hashrate_filename := charts_dir + "/hashrate" + suffix + ".json"
 			hashrate_chart := readChart(hashrate_filename)
@@ -279,7 +286,22 @@ func main() {
 			difficulty_filename := charts_dir + "/difficulty_avg" + suffix + ".json"
 			difficulty_chart := readChart(difficulty_filename)
 
+			// Read versions
+			blocks_version_1_0_filename := charts_dir + "/version_1_0" + suffix + ".json"
+			blocks_version_1_0_chart := readChart(blocks_version_1_0_filename)
+			blocks_version_1_1_filename := charts_dir + "/version_1_1" + suffix + ".json"
+			blocks_version_1_1_chart := readChart(blocks_version_1_1_filename)
+			blocks_version_2_0_filename := charts_dir + "/version_2_0" + suffix + ".json"
+			blocks_version_2_0_chart := readChart(blocks_version_2_0_filename)
+			blocks_version_2_1_filename := charts_dir + "/version_2_1" + suffix + ".json"
+			blocks_version_2_1_chart := readChart(blocks_version_2_1_filename)
+			blocks_version_3_0_filename := charts_dir + "/version_3_0" + suffix + ".json"
+			blocks_version_3_0_chart := readChart(blocks_version_3_0_filename)
+
 			for i := start_height + 1; i < ch.Height; i++ {
+				// Don't kill the server!
+				time.Sleep(10 * time.Millisecond)
+
 				var height = i
 				height_string := strconv.Itoa(height)
 				jsonStr = []byte(`{"method": "f_block_json","params": {"hash": "` + height_string + `"}}`)
@@ -306,6 +328,27 @@ func main() {
 				if block.Result.Block.Penalty != 0 {
 					blocks_with_penalty += 1
 				}
+				if block.Result.Block.MajorVersion == 1 {
+					if block.Result.Block.MinorVersion == 0 {
+						blocks_with_version_1_0_count += 1
+					}
+					if block.Result.Block.MinorVersion == 1 {
+						blocks_with_version_1_1_count += 1
+					}
+				}
+				if block.Result.Block.MajorVersion == 2 {
+					if block.Result.Block.MinorVersion == 0 {
+						blocks_with_version_2_0_count += 1
+					}
+					if block.Result.Block.MinorVersion == 1 {
+						blocks_with_version_2_1_count += 1
+					}
+				}
+				if block.Result.Block.MajorVersion == 3 {
+					if block.Result.Block.MinorVersion == 0 {
+						blocks_with_version_3_0_count += 1
+					}
+				}
 				for key, element := range block.Result.Block.Transactions {
 					if key != 0 {
 						if element.Fee != 0 {
@@ -327,6 +370,10 @@ func main() {
 						if last_timestamp > block.Result.Block.Timestamp {
 							// Stupid fix of blockchain timestamp issue
 							current_time_per_cycle = block.Result.Block.Timestamp - last_timestamp + 1*60*60
+							// Someone is playing with the timestamp
+							if current_time_per_cycle < 0 {
+								current_time_per_cycle = blocks_per_cycle
+							}
 						} else {
 							current_time_per_cycle = block.Result.Block.Timestamp - last_timestamp
 						}
@@ -386,6 +433,28 @@ func main() {
 					difficulty := uint64(block.Result.Block.Difficulty)
 					difficulty_chart = addPointToChart(last_timestamp, difficulty, difficulty_chart, difficulty_filename)
 
+					// Block version
+					if blocks_with_version_1_0_count > 0 {
+						blocks_with_version_1_0_percentage := uint64(float64(blocks_with_version_1_0_count) * 100 / float64(blocks_per_cycle))
+						blocks_version_1_0_chart = addPointToChart(last_timestamp, blocks_with_version_1_0_percentage, blocks_version_1_0_chart, blocks_version_1_0_filename)
+					}
+					if blocks_with_version_1_1_count > 0 {
+						blocks_with_version_1_1_percentage := uint64(float64(blocks_with_version_1_1_count) * 100 / float64(blocks_per_cycle))
+						blocks_version_1_1_chart = addPointToChart(last_timestamp, blocks_with_version_1_1_percentage, blocks_version_1_1_chart, blocks_version_1_1_filename)
+					}
+					if blocks_with_version_2_0_count > 0 {
+						blocks_with_version_2_0_percentage := uint64(float64(blocks_with_version_2_0_count) * 100 / float64(blocks_per_cycle))
+						blocks_version_2_0_chart = addPointToChart(last_timestamp, blocks_with_version_2_0_percentage, blocks_version_2_0_chart, blocks_version_2_0_filename)
+					}
+					if blocks_with_version_2_1_count > 0 {
+						blocks_with_version_2_1_percentage := uint64(float64(blocks_with_version_2_1_count) * 100 / float64(blocks_per_cycle))
+						blocks_version_2_1_chart = addPointToChart(last_timestamp, blocks_with_version_2_1_percentage, blocks_version_2_1_chart, blocks_version_2_1_filename)
+					}
+					if blocks_with_version_3_0_count > 0 {
+						blocks_with_version_3_0_percentage := uint64(float64(blocks_with_version_3_0_count) * 100 / float64(blocks_per_cycle))
+						blocks_version_3_0_chart = addPointToChart(last_timestamp, blocks_with_version_3_0_percentage, blocks_version_3_0_chart, blocks_version_3_0_filename)
+					}
+
 					// Null aggregated values
 					transactions_count = 0
 					transactions_outputs = 0
@@ -396,6 +465,12 @@ func main() {
 					blocks_size_culm = 0
 					blocks_with_penalty = 0
 					difficulty_culm = 0
+
+					blocks_with_version_1_0_count = 0
+					blocks_with_version_1_1_count = 0
+					blocks_with_version_2_0_count = 0
+					blocks_with_version_2_1_count = 0
+					blocks_with_version_3_0_count = 0
 
 					writeFile(charts_dir+"/height"+suffix, []byte(height_string))
 					fmt.Println("Network: ", string(cc.Result.Core.CRYPTONOTENAME), "   Height: ", height_string)

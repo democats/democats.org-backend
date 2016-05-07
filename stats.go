@@ -75,8 +75,8 @@ func main() {
 	for _, element := range pools["pools"].Arr[:] {
 		resp, err := http.Get(element.Obj["poolrpc"].Str + "stats")
 		if err != nil {
-			log.Fatal(err)
-			return
+			// Next if the pool is down
+			continue
 		}
 		defer resp.Body.Close()
 		body, _ := ioutil.ReadAll(resp.Body)
