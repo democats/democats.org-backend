@@ -19,7 +19,7 @@ import (
 )
 
 // Change to 0 to connect to remote host
-var localhost_for_daemon_rpc = 1
+var localhost_for_daemon_rpc = 0
 
 type CoinHeight struct {
 	Height int    `json:"height"`
@@ -38,6 +38,8 @@ type CoinConfig struct {
 			CHECKPOINTS                            []string `json:"CHECKPOINTS"`
 			CRYPTONOTEBLOCKGRANTEDFULLREWARDZONE   int      `json:"CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE"`
 			CRYPTONOTEBLOCKGRANTEDFULLREWARDZONEV1 int      `json:"CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V1"`
+			CRYPTONOTEBLOCKGRANTEDFULLREWARDZONEV2 int      `json:"CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V2"`
+			CRYPTONOTECOINVERSION                  int      `json:"CRYPTONOTE_COIN_VERSION"`
 			CRYPTONOTEDISPLAYDECIMALPOINT          int      `json:"CRYPTONOTE_DISPLAY_DECIMAL_POINT"`
 			CRYPTONOTEMINEDMONEYUNLOCKWINDOW       int      `json:"CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW"`
 			CRYPTONOTENAME                         string   `json:"CRYPTONOTE_NAME"`
@@ -48,15 +50,18 @@ type CoinConfig struct {
 			DIFFICULTYTARGET                       int      `json:"DIFFICULTY_TARGET"`
 			EMISSIONSPEEDFACTOR                    int      `json:"EMISSION_SPEED_FACTOR"`
 			EXPECTEDNUMBEROFBLOCKSPERDAY           int      `json:"EXPECTED_NUMBER_OF_BLOCKS_PER_DAY"`
-			GENESISBLOCKREWARD                     int      `json:"GENESIS_BLOCK_REWARD"`
+			GENESISBLOCKREWARD                     string   `json:"GENESIS_BLOCK_REWARD"`
 			GENESISCOINBASETXHEX                   string   `json:"GENESIS_COINBASE_TX_HEX"`
+			KILLHEIGHT                             int      `json:"KILL_HEIGHT"`
+			MANDATORYTRANSACTION                   int      `json:"MANDATORY_TRANSACTION"`
 			MAXBLOCKSIZEINITIAL                    int      `json:"MAX_BLOCK_SIZE_INITIAL"`
 			MINIMUMFEE                             int      `json:"MINIMUM_FEE"`
 			MONEYSUPPLY                            string   `json:"MONEY_SUPPLY"`
 			P2PDEFAULTPORT                         int      `json:"P2P_DEFAULT_PORT"`
 			RPCDEFAULTPORT                         int      `json:"RPC_DEFAULT_PORT"`
 			SEEDNODES                              []string `json:"SEED_NODES"`
-			UPGRADEHEIGHT                          int      `json:"UPGRADE_HEIGHT"`
+			UPGRADEHEIGHTV2                        int      `json:"UPGRADE_HEIGHT_V2"`
+			UPGRADEHEIGHTV3                        int      `json:"UPGRADE_HEIGHT_V3"`
 		} `json:"core"`
 		Extensions []string `json:"extensions"`
 		Status     string   `json:"status"`
@@ -182,9 +187,15 @@ func main() {
 
 			// Get height
 			resp, err := http.Get(element.Obj["daemonrpc"].Str + "getheight")
-			check(err)
+			if err != nil {
+				// Next if the pool is down
+				continue
+			}
 			defer resp.Body.Close()
 			body, _ := ioutil.ReadAll(resp.Body)
+			if len(body) == 0 {
+				continue
+			}
 
 			var ch CoinHeight
 			err = json.Unmarshal(body, &ch)

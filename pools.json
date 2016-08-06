@@ -29,11 +29,5 @@
         "poolmining": "pool.democats.org:45560",
         "poolrpc": "http://pool.democats.org:7663/",
         "daemonrpc": "http://pool.democats.org:7661/"
-    }, {
-        "name": "nocoin",
-        "ticker": "no",
-        "poolmining": "pool.democats.org:45588",
-        "poolrpc": "http://pool.democats.org:7689/",
-        "daemonrpc": "http://pool.democats.org:7686/"
     }]
 }

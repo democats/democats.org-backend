@@ -9,24 +9,27 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 )
 
 // your JSON structure as a byte slice
 //var j = []byte(`{"foo":1,"bar":2,"baz":[3,4]}`)
 
 type PoolStats struct {
-	Currency        string  `json:"currency"`
-	Workers         float64 `json:"workers"`
-	Fee             float64 `json:"fee"`
-	Height          float64 `json:"height"`
-	LastBlock       string  `json:"last_block"`
-	Difficulty      float64 `json:"difficulty"`
-	CoinUnits       float64 `json:"coin_units"`
-	Depth           float64 `json:"depth"`
-	TotalPayments   float64 `json:"total_payments"`
-	TotalMinersPaid float64 `json:"total_miners_paid"`
-	PoolHashrate    float64 `json:"pool_hashrate"`
-	WorldHashrate   float64 `json:"world_hashrate"`
+	Currency            string  `json:"currency"`
+	Workers             float64 `json:"workers"`
+	MinPaymentThreshold float64 `json:"min_payment_threshold"`
+	Fee                 float64 `json:"fee"`
+	Donation            float64 `json:"donation"`
+	Height              float64 `json:"height"`
+	LastBlock           string  `json:"last_block"`
+	Difficulty          float64 `json:"difficulty"`
+	CoinUnits           float64 `json:"coin_units"`
+	Depth               float64 `json:"depth"`
+	TotalPayments       float64 `json:"total_payments"`
+	TotalMinersPaid     float64 `json:"total_miners_paid"`
+	PoolHashrate        float64 `json:"pool_hashrate"`
+	WorldHashrate       float64 `json:"world_hashrate"`
 }
 
 func (a *PoolStats) UnmarshalJSON(b []byte) error {
@@ -39,6 +42,7 @@ func (a *PoolStats) UnmarshalJSON(b []byte) error {
 	v1 := configmap.(map[string]interface{})
 
 	a.Currency = v1["coin"].(string)
+	a.MinPaymentThreshold = v1["minPaymentThreshold"].(float64)
 	a.Fee = v1["fee"].(float64)
 	a.CoinUnits = v1["coinUnits"].(float64)
 	a.Depth = v1["depth"].(float64)
@@ -63,6 +67,11 @@ func (a *PoolStats) UnmarshalJSON(b []byte) error {
 }
 
 func main() {
+	timeout := time.Duration(3 * time.Second)
+	httpClient := http.Client{
+		Timeout: timeout,
+	}
+
 	stats := []PoolStats{}
 
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
@@ -73,13 +82,17 @@ func main() {
 	pools, err := jsonconfig.LoadAbstract(dir+"/pools.json", "")
 
 	for _, element := range pools["pools"].Arr[:] {
-		resp, err := http.Get(element.Obj["poolrpc"].Str + "stats")
+		resp, err := httpClient.Get(element.Obj["poolrpc"].Str + "stats")
 		if err != nil {
 			// Next if the pool is down
 			continue
 		}
 		defer resp.Body.Close()
-		body, _ := ioutil.ReadAll(resp.Body)
+		body, err := ioutil.ReadAll(resp.Body)
+
+		if len(body) == 0 {
+			continue
+		}
 
 		var s PoolStats
 		err = json.Unmarshal(body, &s)

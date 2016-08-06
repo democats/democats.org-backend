@@ -1,0 +1,6 @@
+{
+    "nodes": [
+        "http://pool.democats.org:7631/",
+        "http://localhost:11777/"
+    ]
+}
