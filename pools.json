@@ -4,30 +4,48 @@
         "ticker": "BCN",
         "poolmining": "pool.democats.org:45500",
         "poolrpc": "http://pool.democats.org:7603/",
-        "daemonrpc": "http://pool.democats.org:7601/"
+        "daemonrpc": "http://nodes1.democats.org:7601/"
     }, {
         "name": "Dashcoin",
         "ticker": "DSH",
         "poolmining": "pool.democats.org:45510",
         "poolrpc": "http://pool.democats.org:7613/",
-        "daemonrpc": "http://pool.democats.org:7611/" 
-    }, {
-        "name": "Ethanolium",
-        "ticker": "C2H5OH",
-        "poolmining": "pool.democats.org:45530",
-        "poolrpc": "http://pool.democats.org:7633/",
-        "daemonrpc": "http://pool.democats.org:7631/"
+        "daemonrpc": "http://pool.democats.org:7611/"
     }, {
         "name": "Magnatoj",
         "ticker": "XMN",
         "poolmining": "pool.democats.org:45520",
         "poolrpc": "http://pool.democats.org:7623/",
-        "daemonrpc": "http://pool.democats.org:7621/"
+        "daemonrpc": "http://nodes1.democats.org:7621/"
     }, {
-        "name": "Quazarcoin",
-        "ticker": "QCN",
-        "poolmining": "pool.democats.org:45560",
-        "poolrpc": "http://pool.democats.org:7663/",
-        "daemonrpc": "http://pool.democats.org:7661/"
+        "name": "Bikercoin",
+        "ticker": "BIC",
+        "poolmining": "pool2.democats.org:45560",
+        "poolrpc": "http://pool2.democats.org:7663/",
+        "daemonrpc": "http://pool2.democats.org:7661/"
+    }, {
+        "name": "Karbowanec",
+        "ticker": "KRB",
+        "poolmining": "pool2.democats.org:45570",
+        "poolrpc": "http://pool2.democats.org:7673/",
+        "daemonrpc": "http://pool2.democats.org:7671/"
+    }, {
+        "name": "BipCoin",
+        "ticker": "BIP",
+        "poolmining": "pool.democats.org:45590",
+        "poolrpc": "http://pool.democats.org:7693/",
+        "daemonrpc": "http://pool.democats.org:7691/"
+    }, {
+        "name": "Bitcoal",
+        "ticker": "COAL",
+        "poolmining": "pool.democats.org:45600",
+        "poolrpc": "http://pool.democats.org:7703/",
+        "daemonrpc": "http://pool.democats.org:7701/"
+    }, {
+        "name": "XCICoin",
+        "ticker": "XCI",
+        "poolmining": "pool3.democats.org:45710",
+        "poolrpc": "http://pool3.democats.org:7713/",
+        "daemonrpc": "http://pool3.democats.org:7711/"
     }]
 }
